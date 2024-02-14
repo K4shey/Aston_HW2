@@ -8,12 +8,42 @@
 
   <servlet>
     <servlet-name>employeeServlet</servlet-name>
-    <servlet-class>servlets.EmployeeServlet</servlet-class>
+    <servlet-class>servlet.EmployeeServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>employeeServlet</servlet-name>
     <url-pattern>/employees</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>departmentServlet</servlet-name>
+    <servlet-class>servlet.DepartmentServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>departmentServlet</servlet-name>
+    <url-pattern>/departments</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>RestEmployeeServlet</servlet-name>
+    <servlet-class>controller.EmployeeRestController</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestEmployeeServlet</servlet-name>
+    <url-pattern>/v1/api/enterprise/employees</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>RestDepartmentsServlet</servlet-name>
+    <servlet-class>controller.DepartmentRestController</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestDepartmentsServlet</servlet-name>
+    <url-pattern>/v1/api/enterprise/departments</url-pattern>
   </servlet-mapping>
 
 </web-app>

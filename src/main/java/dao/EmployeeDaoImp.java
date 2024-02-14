@@ -5,9 +5,9 @@ import model.Employee;
 import util.DbUtil;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,49 +22,125 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    public Employee save(Employee employee, long id) {
-        return null;
+    public void create(Employee employee) {
+        String sql = employee.getCitizenship().isEmpty() ? """
+                INSERT INTO employees (name, email, age, department_id)
+                VALUES (?, ?, ?, ?);
+                """ :
+                """
+                        INSERT INTO employees (name, email, age, department_id, citizenship)
+                        VALUES (?, ?, ?, ?, ?);
+                        """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+
+            preparedStatement.setString(1, employee.getName());
+            preparedStatement.setString(2, employee.getEmail());
+            preparedStatement.setInt(3, employee.getAge());
+            preparedStatement.setLong(4, employee.getDepartment().getId());
+            if (!employee.getCitizenship().isEmpty()) {
+                preparedStatement.setString(5, employee.getCitizenship());
+            }
+            preparedStatement.executeUpdate();
+            var generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                employee.setId(generatedKeys.getLong(1));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public Employee get(long id) {
-        return null;
+    public void update(long id, Employee employeeToUpdate) {
+        String sql = """
+                UPDATE employees SET name = ?, email = ?, age = ?, citizenship = ?, department_id = ?
+                WHERE id = ?;
+                """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setString(1, employeeToUpdate.getName());
+            preparedStatement.setString(2, employeeToUpdate.getEmail());
+            preparedStatement.setInt(3, employeeToUpdate.getAge());
+            preparedStatement.setString(4, employeeToUpdate.getCitizenship());
+            preparedStatement.setLong(5, employeeToUpdate.getDepartment().getId());
+            preparedStatement.setLong(6, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean delete(long id) {
+        String sql = """
+                DELETE FROM employees
+                WHERE employees.id = ?;
+                """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            preparedStatement.setLong(1, id);
+            return preparedStatement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
-    public Collection<Employee> getAll() {
+    public Employee get(long id) {
+        String sql = """
+                            SELECT e.id, e.name, e.email, e.age, e.citizenship, d.name AS deptname, d.id AS deptid
+                            FROM  employees  e
+                            LEFT JOIN public.departments d
+                            ON d.id = e.department_id
+                            WHERE e.id = ?;
+                """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 
-        List<Employee> employees = new ArrayList<>();
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(
-                    "SELECT e.id, e.name, e.email, e.age, e.citizenship, d.name AS deptname, d.id AS deptid" +
-                            " FROM  employees  e" +
-                            " LEFT JOIN public.departments d" +
-                            " ON d.id = e.department_id;");
-            while (rs.next()) {
-
-                Department department = new Department();
-                department.setId(rs.getLong("deptid"));
-                department.setName(rs.getString("deptname"));
-
-                Employee employee = new Employee();
-                employee.setId(rs.getLong("id"));
-                employee.setName(rs.getString("name"));
-                employee.setEmail(rs.getString("email"));
-                employee.setAge(rs.getInt("age"));
-                employee.setCitizenship(rs.getString("citizenship"));
-                employee.setDepartment(department);
-                employees.add(employee);
+            preparedStatement.setLong(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return getEmployee(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public Collection<Employee> getAll() {
+        List<Employee> employees = new ArrayList<>();
+        String sql = """
+                SELECT e.id, e.name, e.email, e.age, e.citizenship, d.name AS deptname, d.id AS deptid
+                FROM  employees  e
+                LEFT JOIN public.departments d
+                ON d.id = e.department_id;
+                """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Employee employee = getEmployee(rs);
+                employees.add(employee);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return employees;
+    }
+
+    private static Employee getEmployee(ResultSet rs) throws SQLException {
+        Department department = new Department();
+        department.setId(rs.getLong("deptid"));
+        department.setName(rs.getString("deptname"));
+
+        Employee employee = new Employee();
+        employee.setId(rs.getLong("id"));
+        employee.setName(rs.getString("name"));
+        employee.setEmail(rs.getString("email"));
+        employee.setAge(rs.getInt("age"));
+        employee.setCitizenship(rs.getString("citizenship"));
+        employee.setDepartment(department);
+        return employee;
     }
 }

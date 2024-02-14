@@ -5,7 +5,10 @@ import model.Employee;
 import java.util.Collection;
 
 public interface EmployeeDao {
-    Employee save(Employee employee, long id);
+
+    void create(Employee employee);
+
+    void update(long id, Employee employee);
 
     Employee get(long id);
 

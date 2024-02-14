@@ -8,6 +8,9 @@
     <title>Show All Employees</title>
 </head>
 <body>
+<h3><a href="index.jsp">Home</a></h3>
+<hr>
+<h2>Employees list</h2>
 <table border="1">
     <thead>
     <tr>
@@ -17,6 +20,7 @@
         <th>Age</th>
         <th>Citizenship</th>
         <th>Department</th>
+        <th colspan=2>Action</th>
     </tr>
     </thead>
     <tbody>
@@ -28,9 +32,12 @@
             <td><c:out value="${employee.age}" /></td>
             <td><c:out value="${employee.citizenship}" /></td>
             <td><c:out value="${employee.department.name}" /></td>
+            <td><a href="employees?action=update&id=<c:out value="${employee.id}"/>">Update</a></td>
+            <td><a href="employees?action=delete&id=<c:out value="${employee.id}"/>">Delete</a></td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
+<p><a href="employees?action=create">Add Employee</a></p>
 </body>
 </html>

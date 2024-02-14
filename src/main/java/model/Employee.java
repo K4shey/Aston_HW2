@@ -8,8 +8,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee {
-    private Long id;
+public class Employee extends AbstractBaseEntity {
     private String name;
     private String email;
     private int age;
