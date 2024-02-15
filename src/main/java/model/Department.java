@@ -1,13 +1,14 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
-public class Department extends AbstractBaseEntity {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Department {
+    private Long id;
     private String name;
 }

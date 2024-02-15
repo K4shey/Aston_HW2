@@ -3,8 +3,6 @@ package servlet;
 import dao.DepartmentDao;
 import dao.DepartmentDaoImp;
 import model.Department;
-import model.Employee;
-import service.EmployeeService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,8 +23,9 @@ public class DepartmentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-        Department department = new Department();
-        department.setName(request.getParameter("name"));
+        Department department = Department.builder()
+                .name(request.getParameter("name"))
+                .build();
         String id = request.getParameter("id");
         if (id == null || id.isEmpty()) {
             departmentDao.create(department);

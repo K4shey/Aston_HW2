@@ -2,9 +2,7 @@ package controller;
 
 import com.google.gson.Gson;
 import model.Department;
-import model.Employee;
 import service.DepartmentService;
-import service.EmployeeService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -52,6 +50,22 @@ public class DepartmentRestController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long id = getId(request);
+        Department departmentToUpdate = departmentService.get(id);
+        if (departmentToUpdate != null) {
+            String name = request.getParameter("name");
+            if (name != null) {
+                departmentToUpdate.setName(name);
+            }
+            departmentService.update(id, departmentToUpdate);
+            setJsonResponse(response, departmentToUpdate, 200);
+            return;
+        }
+        setJsonResponse(response, null, 404);
     }
 
     private Long getId(HttpServletRequest request) {

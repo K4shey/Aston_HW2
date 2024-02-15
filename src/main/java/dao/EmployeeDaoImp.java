@@ -130,17 +130,18 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     private static Employee getEmployee(ResultSet rs) throws SQLException {
-        Department department = new Department();
-        department.setId(rs.getLong("deptid"));
-        department.setName(rs.getString("deptname"));
+        Department department = Department.builder()
+                .id(rs.getLong("deptid"))
+                .name(rs.getString("deptname"))
+                .build();
 
-        Employee employee = new Employee();
-        employee.setId(rs.getLong("id"));
-        employee.setName(rs.getString("name"));
-        employee.setEmail(rs.getString("email"));
-        employee.setAge(rs.getInt("age"));
-        employee.setCitizenship(rs.getString("citizenship"));
-        employee.setDepartment(department);
-        return employee;
+        return Employee.builder()
+                .id(rs.getLong("id"))
+                .name(rs.getString("name"))
+                .email(rs.getString("email"))
+                .age(rs.getInt("age"))
+                .citizenship(rs.getString("citizenship"))
+                .department(department)
+                .build();
     }
 }

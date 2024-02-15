@@ -25,13 +25,13 @@ public class EmployeeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-        Employee employee = new Employee();
-        employee.setName(request.getParameter("name"));
-        employee.setEmail(request.getParameter("email"));
-        employee.setAge(Integer.parseInt(request.getParameter("age")));
-        employee.setCitizenship(request.getParameter("citizenship"));
-
-        employee.setDepartment(departmentDao.get(Long.parseLong(request.getParameter("department"))));
+        Employee employee = Employee.builder()
+                .name(request.getParameter("name"))
+                .email(request.getParameter("email"))
+                .age(Integer.parseInt(request.getParameter("age")))
+                .citizenship(request.getParameter("citizenship"))
+                .department(departmentDao.get(Long.parseLong(request.getParameter("department"))))
+                .build();
 
         String id = request.getParameter("id");
         if (id == null || id.isEmpty()) {

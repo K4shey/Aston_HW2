@@ -1,7 +1,9 @@
 package controller;
 
 import com.google.gson.Gson;
+import model.Department;
 import model.Employee;
+import service.DepartmentService;
 import service.EmployeeService;
 
 import javax.servlet.ServletException;
@@ -16,12 +18,14 @@ import java.util.Objects;
 public class EmployeeRestController extends HttpServlet {
 
     private EmployeeService employeeService;
+    private DepartmentService departmentService;
     private Gson gson;
 
     @Override
     public void init() throws ServletException {
         this.gson = new Gson();
         this.employeeService = new EmployeeService();
+        this.departmentService = new DepartmentService();
     }
 
     @Override
@@ -50,6 +54,41 @@ public class EmployeeRestController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doPost(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long id = getId(request);
+        Employee employeeToUpdate = employeeService.get(id);
+        if (employeeToUpdate != null) {
+            String name = request.getParameter("name");
+            if (name != null) {
+                employeeToUpdate.setName(name);
+            }
+            String email = request.getParameter("email");
+            if (email != null) {
+                employeeToUpdate.setEmail(email);
+            }
+            String age = request.getParameter("age");
+            if (age != null) {
+                employeeToUpdate.setAge(Integer.parseInt(age));
+            }
+            String citizenship = request.getParameter("citizenship");
+            if (citizenship != null) {
+                employeeToUpdate.setCitizenship(citizenship);
+            }
+            String departmentId = request.getParameter("department");
+            if (departmentId != null) {
+                Department newDepartment = departmentService.get(Long.parseLong(departmentId));
+                if (newDepartment != null) {
+                    employeeToUpdate.setDepartment(newDepartment);
+                }
+            }
+            employeeService.update(id, employeeToUpdate);
+            setJsonResponse(response, employeeToUpdate, 200);
+            return;
+        }
+        setJsonResponse(response, null, 404);
     }
 
     private Long getId(HttpServletRequest request) {
