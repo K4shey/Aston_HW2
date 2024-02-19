@@ -1,8 +1,7 @@
 package servlet;
 
-import dao.DepartmentDao;
-import dao.DepartmentDaoImp;
 import model.Department;
+import service.DepartmentService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,11 +12,11 @@ import java.util.Objects;
 
 public class DepartmentServlet extends HttpServlet {
 
-    private DepartmentDao departmentDao;
+    private DepartmentService departmentService;
 
     @Override
     public void init() throws ServletException {
-        this.departmentDao = new DepartmentDaoImp();
+        this.departmentService = new DepartmentService();
     }
 
     @Override
@@ -28,10 +27,10 @@ public class DepartmentServlet extends HttpServlet {
                 .build();
         String id = request.getParameter("id");
         if (id == null || id.isEmpty()) {
-            departmentDao.create(department);
+            departmentService.create(department);
         } else {
             department.setId(getId(request));
-            departmentDao.update(department.getId(), department);
+            departmentService.update(department.getId(), department);
         }
         response.sendRedirect("departments");
     }
@@ -44,20 +43,20 @@ public class DepartmentServlet extends HttpServlet {
         switch (action == null ? "all" : action) {
             case "delete":
                 Long id = getId(request);
-                departmentDao.delete(id);
+                departmentService.delete(id);
                 response.sendRedirect("departments");
                 break;
             case "create":
             case "update":
                 final Department department = "create".equals(action) ?
                         new Department() :
-                        departmentDao.get(getId(request));
+                        departmentService.get(getId(request));
                 request.setAttribute("department", department);
                 request.getRequestDispatcher("/department.jsp").forward(request, response);
                 break;
             case "all":
             default:
-                request.setAttribute("departments", departmentDao.getAll());
+                request.setAttribute("departments", departmentService.getAll());
                 request.getRequestDispatcher("/departments.jsp").forward(request, response);
                 break;
         }

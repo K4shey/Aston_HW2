@@ -13,8 +13,8 @@ public class DepartmentService {
         this.dao = new DepartmentDaoImp();
     }
 
-    public void create(Department department){
-        dao.create(department);
+    public Department create(Department department){
+        return dao.create(department);
     }
 
     public void update(long id, Department department){

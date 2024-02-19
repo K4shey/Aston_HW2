@@ -52,8 +52,25 @@ public class EmployeeRestController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String age = request.getParameter("age");
+        String citizenship = request.getParameter("citizenship");
+        String departmentId = request.getParameter("department");
+        if (name == null || email == null || age == null || departmentId == null) {
+            setJsonResponse(response, null, 400);
+            return;
+        }
+        Employee newEmployee = Employee.builder()
+                .name(request.getParameter("name"))
+                .email(request.getParameter("email"))
+                .age(Integer.parseInt(request.getParameter("age")))
+                .citizenship(citizenship == null ? "" : citizenship)
+                .department(departmentService.get(Long.parseLong(request.getParameter("department"))))
+                .build();
+        Employee resultEmployee = employeeService.create(newEmployee);
+        setJsonResponse(response, resultEmployee, resultEmployee == null ? 400 : 201);
     }
 
     @Override

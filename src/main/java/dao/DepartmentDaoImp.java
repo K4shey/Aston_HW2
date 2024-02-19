@@ -3,10 +3,7 @@ package dao;
 import model.Department;
 import util.DbUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,21 +17,23 @@ public class DepartmentDaoImp implements DepartmentDao {
     }
 
     @Override
-    public void create(Department department) {
+    public Department create(Department department) {
         String sql = """
                 INSERT INTO departments (name)
                 VALUES (?);
                 """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, department.getName());
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 department.setId(generatedKeys.getLong(1));
+                return department;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
@@ -74,17 +73,16 @@ public class DepartmentDaoImp implements DepartmentDao {
                             FROM  departments  d
                             WHERE d.id = ?;
                 """;
-        Department department = new Department();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                department = getDepartment(rs);
+                return getDepartment(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return department;
+        return null;
     }
 
     @Override

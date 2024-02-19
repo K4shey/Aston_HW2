@@ -4,10 +4,7 @@ import model.Department;
 import model.Employee;
 import util.DbUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,17 +19,16 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    public void create(Employee employee) {
+    public Employee create(Employee employee) {
         String sql = employee.getCitizenship().isEmpty() ? """
                 INSERT INTO employees (name, email, age, department_id)
                 VALUES (?, ?, ?, ?);
                 """ :
                 """
-                        INSERT INTO employees (name, email, age, department_id, citizenship)
-                        VALUES (?, ?, ?, ?, ?);
-                        """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-
+                INSERT INTO employees (name, email, age, department_id, citizenship)
+                VALUES (?, ?, ?, ?, ?);
+                """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, employee.getName());
             preparedStatement.setString(2, employee.getEmail());
             preparedStatement.setInt(3, employee.getAge());
@@ -44,11 +40,17 @@ public class EmployeeDaoImp implements EmployeeDao {
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 employee.setId(generatedKeys.getLong(1));
+                if (employee.getCitizenship().isEmpty()) {
+                    employee.setCitizenship(generatedKeys.getString(5));
+                }
+                generatedKeys.getString(5);
+                return employee;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override

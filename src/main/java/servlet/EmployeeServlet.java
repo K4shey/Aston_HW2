@@ -1,8 +1,7 @@
 package servlet;
 
-import dao.DepartmentDao;
-import dao.DepartmentDaoImp;
 import model.Employee;
+import service.DepartmentService;
 import service.EmployeeService;
 
 import javax.servlet.ServletException;
@@ -14,12 +13,12 @@ import java.util.Objects;
 
 public class EmployeeServlet extends HttpServlet {
     private EmployeeService employeeService;
-    private DepartmentDao departmentDao;
+    private DepartmentService departmentService;
 
     @Override
     public void init() throws ServletException {
         this.employeeService = new EmployeeService();
-        this.departmentDao = new DepartmentDaoImp();
+        this.departmentService = new DepartmentService();
     }
 
     @Override
@@ -30,7 +29,7 @@ public class EmployeeServlet extends HttpServlet {
                 .email(request.getParameter("email"))
                 .age(Integer.parseInt(request.getParameter("age")))
                 .citizenship(request.getParameter("citizenship"))
-                .department(departmentDao.get(Long.parseLong(request.getParameter("department"))))
+                .department(departmentService.get(Long.parseLong(request.getParameter("department"))))
                 .build();
 
         String id = request.getParameter("id");
@@ -60,7 +59,7 @@ public class EmployeeServlet extends HttpServlet {
                         new Employee() :
                         employeeService.get(getId(request));
                 request.setAttribute("employee", employee);
-                request.setAttribute("departments", departmentDao.getAll());
+                request.setAttribute("departments", departmentService.getAll());
                 request.getRequestDispatcher("/employee.jsp").forward(request, response);
                 break;
             case "all":
