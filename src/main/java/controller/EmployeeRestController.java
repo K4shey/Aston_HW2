@@ -63,7 +63,7 @@ public class EmployeeRestController extends HttpServlet {
             return;
         }
         Employee newEmployee = Employee.builder()
-                .name(request.getParameter("name"))
+                .name(request.getParameter("name")) // это в маппер лучше
                 .email(request.getParameter("email"))
                 .age(Integer.parseInt(request.getParameter("age")))
                 .citizenship(citizenship == null ? "" : citizenship)
