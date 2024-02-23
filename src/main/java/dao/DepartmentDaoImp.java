@@ -20,8 +20,8 @@ public class DepartmentDaoImp implements DepartmentDao {
     public Department create(Department department) {
         String sql = """
                 INSERT INTO departments (name)
-                VALUES (?);
-                """;
+                VALUES (?); 
+                """;// это в константу
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, department.getName());
             preparedStatement.executeUpdate();

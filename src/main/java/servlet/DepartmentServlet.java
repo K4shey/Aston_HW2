@@ -46,8 +46,7 @@ public class DepartmentServlet extends HttpServlet {
                 departmentService.delete(id);
                 response.sendRedirect("departments");
                 break;
-            case "create":
-            case "update":
+            case "create", "update":
                 final Department department = "create".equals(action) ?
                         new Department() :
                         departmentService.get(getId(request));
