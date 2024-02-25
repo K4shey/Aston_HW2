@@ -14,7 +14,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
-public class DbUtilTst {
+public class DbUtilTests {
     private static Connection connection = null;
 
     public static Connection getConnection() {
@@ -23,7 +23,7 @@ public class DbUtilTst {
         else {
             try {
                 Properties prop = new Properties();
-                InputStream inputStream = DbUtilTst.class.getClassLoader().getResourceAsStream("db/hsqldb.properties");
+                InputStream inputStream = DbUtilTests.class.getClassLoader().getResourceAsStream("db/hsqldb.properties");
                 prop.load(inputStream);
                 String driver = prop.getProperty("database.driver");
                 String url = prop.getProperty("database.url");
@@ -45,8 +45,8 @@ public class DbUtilTst {
     }
 
     public static void dataBaseInitialization() throws SQLException, URISyntaxException, IOException {
-        URL urlInit = DbUtilTst.class.getClassLoader().getResource("db/initDB_hsql.sql");
-        URL urlPopulate = DbUtilTst.class.getClassLoader().getResource("db/populateDB.sql");
+        URL urlInit = DbUtilTests.class.getClassLoader().getResource("db/initDB_hsql.sql");
+        URL urlPopulate = DbUtilTests.class.getClassLoader().getResource("db/populateDB.sql");
 
         List<String> fileInit = Files.readAllLines(Paths.get(urlInit.toURI()));
         String sqlInit = String.join("", fileInit);

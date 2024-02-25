@@ -5,7 +5,7 @@ import model.Employee;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import util.DbUtilTst;
+import util.DbUtilTests;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,20 +21,28 @@ public class EmployeeDaoImpTest {
 
     @BeforeAll
     static void getConnection() {
-        Connection connection = DbUtilTst.getConnection();
+        Connection connection = DbUtilTests.getConnection();
         employeeDao = new EmployeeDaoImp(connection);
         departmentDao = new DepartmentDaoImp(connection);
     }
 
     @BeforeEach
     void initialization() throws URISyntaxException, IOException, SQLException {
-        DbUtilTst.dataBaseInitialization();
+        DbUtilTests.dataBaseInitialization();
     }
 
     @Test
-    void create() {
+    void create_newEmployeeEmail_Equals() {
+        Employee newEmployee = employeeDao.create(getNewEmployee());
+        assertEquals("test_email@ya.ru", newEmployee.getEmail());
     }
 
+    @Test
+    void create_departmentSizeIncrement_True() {
+        int numberBefore = employeeDao.getAll().size();
+        employeeDao.create(getNewEmployee());
+        assertEquals(++numberBefore, employeeDao.getAll().size());
+    }
     @Test
     void update_changeEmployeeEmail_Equals() {
         Employee employeeToUpdate = employeeDao.get(4L);

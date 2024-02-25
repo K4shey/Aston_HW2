@@ -1,10 +1,11 @@
 package dao;
 
+import lombok.extern.slf4j.Slf4j;
 import model.Department;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import util.DbUtilTst;
+import util.DbUtilTests;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,19 +14,20 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 public class DepartmentDaoImpTest {
 
     private static DepartmentDao departmentDao;
 
     @BeforeAll
     static void getConnection() {
-        Connection connection = DbUtilTst.getConnection();
+        Connection connection = DbUtilTests.getConnection();
         departmentDao = new DepartmentDaoImp(connection);
     }
 
     @BeforeEach
     void initialization() throws URISyntaxException, IOException, SQLException {
-        DbUtilTst.dataBaseInitialization();
+        DbUtilTests.dataBaseInitialization();
     }
 
     @Test
