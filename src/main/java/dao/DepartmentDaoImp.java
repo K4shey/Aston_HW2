@@ -1,5 +1,6 @@
 package dao;
 
+import mapper.DepartmentMapper;
 import model.Department;
 import util.DbUtil;
 
@@ -7,6 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static util.QueryUtil.*;
 
 public class DepartmentDaoImp implements DepartmentDao {
 
@@ -16,13 +19,14 @@ public class DepartmentDaoImp implements DepartmentDao {
         connection = DbUtil.getConnection();
     }
 
+    public DepartmentDaoImp(Connection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public Department create(Department department) {
-        String sql = """
-                INSERT INTO departments (name)
-                VALUES (?);
-                """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_DEPARTMENT,
+                Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, department.getName());
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
@@ -38,11 +42,7 @@ public class DepartmentDaoImp implements DepartmentDao {
 
     @Override
     public void update(long id, Department departmentToUpdate) {
-        String sql = """
-                UPDATE departments SET name = ?
-                WHERE id = ?;
-                """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_DEPARTMENT);) {
             preparedStatement.setString(1, departmentToUpdate.getName());
             preparedStatement.setLong(2, id);
             preparedStatement.executeUpdate();
@@ -53,11 +53,7 @@ public class DepartmentDaoImp implements DepartmentDao {
 
     @Override
     public boolean delete(long id) {
-        String sql = """
-                DELETE FROM departments
-                WHERE departments.id = ?;
-                """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_DEPARTMENT);) {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() != 0;
         } catch (SQLException e) {
@@ -68,16 +64,11 @@ public class DepartmentDaoImp implements DepartmentDao {
 
     @Override
     public Department get(long id) {
-        String sql = """
-                            SELECT d.id, d.name
-                            FROM  departments  d
-                            WHERE d.id = ?;
-                """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_DEPARTMENT);) {
             preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
-                return getDepartment(rs);
+                return DepartmentMapper.toModel(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,26 +79,14 @@ public class DepartmentDaoImp implements DepartmentDao {
     @Override
     public Collection<Department> getAll() {
         List<Department> departments = new ArrayList<>();
-        String sql = """
-                SELECT *
-                FROM departments
-                """;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_ALL_DEPARTMENTS);) {
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                Department department = getDepartment(rs);
-                departments.add(department);
+                departments.add(DepartmentMapper.toModel(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return departments;
-    }
-
-    private Department getDepartment(ResultSet rs) throws SQLException {
-        Department department = new Department();
-        department.setId(rs.getLong("id"));
-        department.setName(rs.getString("name"));
-        return department;
     }
 }

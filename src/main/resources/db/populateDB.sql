@@ -1,4 +1,4 @@
--- Заполнение таблицы "departments"
+/* Заполнение таблицы "departments" */
 INSERT INTO departments (name)
 VALUES ('IT');
 INSERT INTO departments (name)
@@ -8,7 +8,7 @@ VALUES ('Отдел продаж');
 INSERT INTO departments (name)
 VALUES ('Контроллинг');
 
--- Заполнение таблицы "employees"
+/* Заполнение таблицы "employees"  */
 INSERT INTO employees (name, email, age, department_id)
 VALUES ('Балаганов', 'shura@ya.ru', 25, 1);
 INSERT INTO employees (name, email, age, department_id)

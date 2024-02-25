@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import mapper.DepartmentMapper;
 import model.Department;
 import service.DepartmentService;
 
@@ -49,13 +50,9 @@ public class DepartmentRestController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
-        if (name != null) {
-            Department newDepartment = Department.builder()
-                    .name(name)
-                    .build();
-            Department resultDepartment = departmentService.create(newDepartment);
-            setJsonResponse(response, resultDepartment, resultDepartment == null ? 400 : 201);
+        Department resultDepartment = departmentService.create(DepartmentMapper.toEntity(request));
+        if (resultDepartment != null) {
+            setJsonResponse(response, resultDepartment, 201);
         } else {
             setJsonResponse(response, null, 400);
         }
